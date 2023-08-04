@@ -16,9 +16,13 @@ http://toyohide.work/BrainLog/api/getStationStamp
             "image_code": "19",
             "poster_position": "吾妻橋方面改札付近（改札外）",
             "stamp_get_date": "2023/1/28"
+
+                        "stamp_get_order": 5
         },
 
 */
+
+import 'package:station_stamp2/extensions/extensions.dart';
 
 class StationStamp {
   StationStamp({
@@ -32,6 +36,7 @@ class StationStamp {
     required this.imageCode,
     required this.posterPosition,
     required this.stampGetDate,
+    required this.stampGetOrder,
   });
 
   factory StationStamp.fromJson(Map<String, dynamic> json) => StationStamp(
@@ -45,6 +50,7 @@ class StationStamp {
         imageCode: json['image_code'].toString(),
         posterPosition: json['poster_position'].toString(),
         stampGetDate: json['stamp_get_date'].toString(),
+        stampGetOrder: json['stamp_get_date'].toString().toInt(),
       );
 
   String trainCode;
@@ -57,6 +63,7 @@ class StationStamp {
   String imageCode;
   String posterPosition;
   String stampGetDate;
+  int stampGetOrder;
 
   Map<String, dynamic> toJson() => {
         'train_code': trainCode,
@@ -69,5 +76,6 @@ class StationStamp {
         'image_code': imageCode,
         'poster_position': posterPosition,
         'stamp_get_date': stampGetDate,
+        'stamp_get_order': stampGetOrder,
       };
 }
