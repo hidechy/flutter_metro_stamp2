@@ -77,26 +77,26 @@ class HomeScreen extends ConsumerWidget {
 
   ///
   Widget _displayStationList() {
-    final selectTrainState = _ref.watch(selectTrainProvider);
+    final selectTrain = _ref.watch(selectTrainProvider);
 
-    final stationStampState = _ref.watch(stationStampProvider);
+    final trainMap = _ref.watch(stationStampProvider.select((value) => value.trainMap));
+
+    final stationStampMap = _ref.watch(stationStampProvider.select((value) => value.stationStampMap));
 
     return Column(
       children: [
         Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Text(
-            stationStampState.trainMap[selectTrainState] ?? '',
-          ),
+          child: Text(trainMap[selectTrain] ?? ''),
         ),
         Expanded(
           child: ListView.separated(
             itemBuilder: (context, index) {
               final latlng =
-                  '${stationStampState.stationStampMap[selectTrainState]?[index].lat} / ${stationStampState.stationStampMap[selectTrainState]?[index].lng}';
+                  '${stationStampMap[selectTrain]?[index].lat} / ${stationStampMap[selectTrain]?[index].lng}';
 
               final image =
-                  'http://toyohide.work/BrainLog/station_stamp/${stationStampState.stationStampMap[selectTrainState]?[index].imageFolder}/${stationStampState.stationStampMap[selectTrainState]?[index].imageCode}.png';
+                  'http://toyohide.work/BrainLog/station_stamp/${stationStampMap[selectTrain]?[index].imageFolder}/${stationStampMap[selectTrain]?[index].imageCode}.png';
 
               return DefaultTextStyle(
                 style: const TextStyle(fontSize: 8),
@@ -108,13 +108,13 @@ class HomeScreen extends ConsumerWidget {
                         const SizedBox(height: 10),
                         CircleAvatar(
                           radius: 18,
-                          backgroundColor: (stationStampState.trainMap[selectTrainState] == null)
+                          backgroundColor: (trainMap[selectTrain] == null)
                               ? Colors.transparent
-                              : _utility.getTrainColor(trainName: stationStampState.trainMap[selectTrainState]!),
+                              : _utility.getTrainColor(trainName: trainMap[selectTrain]!),
                           child: CircleAvatar(
                             radius: 16,
                             child: Text(
-                              stationStampState.stationStampMap[selectTrainState]?[index].imageCode ?? '',
+                              stationStampMap[selectTrain]?[index].imageCode ?? '',
                               style: const TextStyle(fontSize: 10),
                             ),
                           ),
@@ -133,16 +133,14 @@ class HomeScreen extends ConsumerWidget {
                                   nipWidth: 8,
                                   nipHeight: 24,
                                   nip: BubbleNip.leftTop,
-                                  color: (stationStampState.trainMap[selectTrainState] == null)
+                                  color: (trainMap[selectTrain] == null)
                                       ? Colors.transparent
-                                      : _utility
-                                          .getTrainColor(trainName: stationStampState.trainMap[selectTrainState]!)
-                                          .withOpacity(0.4),
+                                      : _utility.getTrainColor(trainName: trainMap[selectTrain]!).withOpacity(0.4),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        stationStampState.stationStampMap[selectTrainState]?[index].stationName ?? '',
+                                        stationStampMap[selectTrain]?[index].stationName ?? '',
                                         style: const TextStyle(fontSize: 10),
                                       ),
                                       Icon(
@@ -165,18 +163,14 @@ class HomeScreen extends ConsumerWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      stationStampState.stationStampMap[selectTrainState]?[index].posterPosition ?? '',
-                                    ),
+                                    Text(stationStampMap[selectTrain]?[index].posterPosition ?? ''),
                                     const SizedBox(height: 5),
                                     Text(latlng),
                                     const SizedBox(height: 5),
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(
-                                          '取得日：${stationStampState.stationStampMap[selectTrainState]?[index].stampGetDate}',
-                                        ),
+                                        Text('取得日：${stationStampMap[selectTrain]?[index].stampGetDate}'),
                                         Icon(
                                           Icons.calendar_today,
                                           size: 14,
@@ -210,7 +204,7 @@ class HomeScreen extends ConsumerWidget {
               );
             },
             separatorBuilder: (context, index) => Container(),
-            itemCount: stationStampState.stationStampMap[selectTrainState]?.length ?? 0,
+            itemCount: stationStampMap[selectTrain]?.length ?? 0,
           ),
         ),
         const SizedBox(height: 20),

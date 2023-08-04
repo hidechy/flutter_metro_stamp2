@@ -22,7 +22,7 @@ http://toyohide.work/BrainLog/api/getStationStamp
 
 */
 
-import 'package:station_stamp2/extensions/extensions.dart';
+import '../extensions/extensions.dart';
 
 class StationStamp {
   StationStamp({
