@@ -3,6 +3,9 @@
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:station_stamp2/screens/station_info_alert.dart';
+import 'package:station_stamp2/screens/station_map_alert.dart';
+import 'package:station_stamp2/screens/station_stamp_dialog.dart';
 
 import '../extensions/extensions.dart';
 import '../state/station_stamp/station_stamp_notifier.dart';
@@ -13,11 +16,13 @@ class HomeScreen extends ConsumerWidget {
 
   final Utility _utility = Utility();
 
+  late BuildContext _context;
   late WidgetRef _ref;
 
   ///
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    _context = context;
     _ref = ref;
 
     return Scaffold(
@@ -79,15 +84,49 @@ class HomeScreen extends ConsumerWidget {
   Widget _displayStationList() {
     final selectTrain = _ref.watch(selectTrainProvider);
 
+    if (selectTrain == '') {
+      return Container();
+    }
+
     final trainMap = _ref.watch(stationStampProvider.select((value) => value.trainMap));
 
     final stationStampMap = _ref.watch(stationStampProvider.select((value) => value.stationStampMap));
 
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Text(trainMap[selectTrain] ?? ''),
+        Stack(
+          children: [
+            Image.asset('assets/images/title-$selectTrain.png'),
+            Container(
+              width: double.infinity,
+              height: 30,
+              color: Colors.black.withOpacity(0.2),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(),
+                Container(
+                  margin: const EdgeInsets.only(top: 3, right: 10),
+                  child: GestureDetector(
+                    onTap: () {
+                      StationStampDialog(
+                        context: _context,
+                        widget: StationMapAlert(
+                          flag: 'train',
+                          stationList: stationStampMap[selectTrain]!,
+                        ),
+                      );
+                    },
+                    child: Icon(
+                      Icons.train,
+                      color: Colors.white.withOpacity(0.6),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
         Expanded(
           child: ListView.separated(
@@ -182,14 +221,22 @@ class HomeScreen extends ConsumerWidget {
                                 ),
                               ),
                               const SizedBox(width: 10),
-                              SizedBox(
-                                width: 40,
-                                child: Opacity(
-                                  opacity: 0.6,
-                                  child: FadeInImage.assetNetwork(
-                                    placeholder: 'assets/images/no_image.png',
-                                    image: image,
-                                    imageErrorBuilder: (c, o, s) => Image.asset('assets/images/no_image.png'),
+                              GestureDetector(
+                                onTap: () {
+                                  StationStampDialog(
+                                    context: _context,
+                                    widget: StationInfoAlert(stamp: stationStampMap[selectTrain]?[index]),
+                                  );
+                                },
+                                child: SizedBox(
+                                  width: 40,
+                                  child: Opacity(
+                                    opacity: 0.6,
+                                    child: FadeInImage.assetNetwork(
+                                      placeholder: 'assets/images/no_image.png',
+                                      image: image,
+                                      imageErrorBuilder: (c, o, s) => Image.asset('assets/images/no_image.png'),
+                                    ),
                                   ),
                                 ),
                               ),

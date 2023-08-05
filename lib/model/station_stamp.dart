@@ -50,7 +50,7 @@ class StationStamp {
         imageCode: json['image_code'].toString(),
         posterPosition: json['poster_position'].toString(),
         stampGetDate: json['stamp_get_date'].toString(),
-        stampGetOrder: json['stamp_get_date'].toString().toInt(),
+        stampGetOrder: (json['stamp_get_order'] != null) ? json['stamp_get_order'].toString().toInt() : 0,
       );
 
   String trainCode;

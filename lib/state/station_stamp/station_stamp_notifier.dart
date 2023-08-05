@@ -57,9 +57,11 @@ class StationStampNotifier extends StateNotifier<StationStampResponseState> {
         stationStampMap: stationStampMap,
         dateStationStampMap: dateStationStampMap,
       );
-    }).catchError((error, _) {
-      utility.showError('予期せぬエラーが発生しました');
     });
+
+    // .catchError((error, _) {
+    //   utility.showError('予期せぬエラーが発生しました');
+    // });
   }
 }
 
