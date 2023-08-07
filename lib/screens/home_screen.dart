@@ -118,7 +118,7 @@ class HomeScreen extends ConsumerWidget {
             Image.asset('assets/images/title-$selectTrain.png'),
             Container(
               width: double.infinity,
-              height: 30,
+              height: 35,
               color: Colors.black.withOpacity(0.2),
             ),
             Row(
@@ -132,7 +132,7 @@ class HomeScreen extends ConsumerWidget {
                       StationStampDialog(
                         context: _context,
                         widget: StationMapAlert(
-                          flag: 'train',
+                          flag: MapCallPattern.train,
                           stationList: stationStampMap[selectTrain]!,
                         ),
                       );
@@ -200,7 +200,7 @@ class HomeScreen extends ConsumerWidget {
                                       ),
                                       GestureDetector(
                                         onTap: () {
-                                          final stationList = _getStation(
+                                          final station = _getStation(
                                             imageFolder: stationStampMap[selectTrain]?[index].imageFolder,
                                             imageCode: stationStampMap[selectTrain]?[index].imageCode,
                                           );
@@ -208,8 +208,8 @@ class HomeScreen extends ConsumerWidget {
                                           StationStampDialog(
                                             context: _context,
                                             widget: StationMapAlert(
-                                              flag: 'spot',
-                                              stationList: [stationList],
+                                              flag: MapCallPattern.spot,
+                                              stationList: [station],
                                             ),
                                           );
                                         },
@@ -251,7 +251,7 @@ class HomeScreen extends ConsumerWidget {
                                             StationStampDialog(
                                               context: _context,
                                               widget: StationMapAlert(
-                                                flag: 'date',
+                                                flag: MapCallPattern.date,
                                                 stationList: stationList,
                                               ),
                                             );
@@ -309,26 +309,17 @@ class HomeScreen extends ConsumerWidget {
 
   ///
   List<StationStamp> _getSamedateStation({String? stampGetDate}) {
-    final list = <StationStamp>[];
-
-    _ref.watch(stationStampProvider.select((value) => value.stationStampList)).forEach((element) {
-      if (element.stampGetDate == stampGetDate!) {
-        list.add(element);
-      }
-    });
-
-    return list;
+    return _ref
+        .watch(stationStampProvider.select((value) => value.stationStampList))
+        .where((element) => element.stampGetDate == stampGetDate)
+        .toList();
   }
 
   ///
   StationStamp _getStation({String? imageFolder, String? imageCode}) {
     final stationStampList = _ref.watch(stationStampProvider.select((value) => value.stationStampList));
-
     final train = stationStampList.where((element) => element.imageFolder == imageFolder).toList();
-
-    final stationStamp = train.firstWhere((e) => e.imageCode == imageCode);
-
-    return stationStamp;
+    return train.firstWhere((e) => e.imageCode == imageCode);
   }
 }
 

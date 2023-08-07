@@ -1,4 +1,4 @@
-// ignore_for_file: must_be_immutable, depend_on_referenced_packages
+// ignore_for_file: must_be_immutable, depend_on_referenced_packages, constant_pattern_never_matches_value_type
 
 import 'dart:math';
 
@@ -12,10 +12,12 @@ import '../model/station_stamp.dart';
 import '../state/station_stamp/station_stamp_notifier.dart';
 import '../utility/utility.dart';
 
+enum MapCallPattern { train, date, spot }
+
 class StationMapAlert extends ConsumerWidget {
   StationMapAlert({super.key, required this.flag, required this.stationList});
 
-  final String flag;
+  final MapCallPattern flag;
   final List<StationStamp> stationList;
 
   final Utility _utility = Utility();
@@ -35,7 +37,7 @@ class StationMapAlert extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _ref = ref;
 
-    if (flag != 'spot') {
+    if (flag != MapCallPattern.spot) {
       makeBounds();
     }
 
@@ -46,10 +48,12 @@ class StationMapAlert extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _displayMapAlertHeader(),
+
             //---------------------------------------------
             Expanded(
               child: FlutterMap(
-                options: (flag == 'spot')
+                options: (flag == MapCallPattern.spot)
                     ? MapOptions(
                         center: LatLng(stationList[0].lat.toDouble(), stationList[0].lng.toDouble()),
                         zoom: 16,
@@ -77,6 +81,13 @@ class StationMapAlert extends ConsumerWidget {
               ),
             ),
             //---------------------------------------------
+
+            const SizedBox(height: 10),
+
+            SizedBox(
+              height: 200,
+              child: _displayMapAlertFooter(),
+            ),
           ],
         ),
       ),
@@ -120,7 +131,7 @@ class StationMapAlert extends ConsumerWidget {
     final keepGetOrder = <int>[];
 
     for (var i = 0; i < stationList.length; i++) {
-      if (flag == 'date') {
+      if (flag == MapCallPattern.date) {
         if (keepGetOrder.contains(stationList[i].stampGetOrder)) {
           continue;
         }
@@ -133,19 +144,19 @@ class StationMapAlert extends ConsumerWidget {
             stationList[i].lng.toDouble(),
           ),
           builder: (context) {
-            return (flag == 'date')
+            return (flag == MapCallPattern.date)
                 ? CircleAvatar(
                     backgroundColor: Colors.black.withOpacity(0.4),
                     child: Text(
                       stationList[i].stampGetOrder.toString(),
-                      style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                     ),
                   )
                 : CircleAvatar(
                     backgroundColor: _utility.getTrainColor(trainName: trainMap[stationList[i].imageFolder]!),
                     child: Text(
-                      (i + 1).toString(),
-                      style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+                      stationList[i].imageCode,
+                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                     ),
                   );
           },
@@ -153,6 +164,67 @@ class StationMapAlert extends ConsumerWidget {
       );
 
       keepGetOrder.add(stationList[i].stampGetOrder);
+    }
+  }
+
+  ///
+  Widget _displayMapAlertHeader() {
+    switch (flag) {
+      case MapCallPattern.train:
+        return Column(
+          children: [
+            Image.asset('assets/images/title-${stationList[0].imageFolder}.png'),
+            const SizedBox(height: 5),
+          ],
+        );
+      case MapCallPattern.date:
+        return Container();
+      case MapCallPattern.spot:
+        return Container();
+    }
+  }
+
+  ///
+  Widget _displayMapAlertFooter() {
+    switch (flag) {
+      case MapCallPattern.train:
+        return DefaultTextStyle(
+          style: const TextStyle(fontSize: 10),
+          child: ListView.builder(
+            itemBuilder: (context, index) {
+              return Container(
+                padding: const EdgeInsets.all(10),
+                margin: const EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Colors.white.withOpacity(0.3),
+                    ),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Text(stationList[index].imageCode),
+                        const SizedBox(width: 20),
+                        Text(stationList[index].stationName),
+                      ],
+                    ),
+                    Text(stationList[index].stampGetDate),
+                  ],
+                ),
+              );
+            },
+            itemCount: stationList.length,
+          ),
+        );
+
+      case MapCallPattern.date:
+        return Container();
+      case MapCallPattern.spot:
+        return Container();
     }
   }
 }
