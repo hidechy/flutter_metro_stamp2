@@ -7,18 +7,23 @@ import '../extensions/extensions.dart';
 import '../model/station_stamp.dart';
 import '../state/holiday/holiday_notifier.dart';
 import '../state/station_stamp/station_stamp_notifier.dart';
+import '../utility/functions.dart';
 import '../utility/utility.dart';
+import 'station_map_alert.dart';
+import 'station_stamp_dialog.dart';
 
 class StationDateListAlert extends ConsumerWidget {
   StationDateListAlert({super.key});
 
   final Utility _utility = Utility();
 
+  late BuildContext _context;
   late WidgetRef _ref;
 
   ///
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    _context = context;
     _ref = ref;
 
     return AlertDialog(
@@ -109,8 +114,33 @@ class StationDateListAlert extends ConsumerWidget {
               Expanded(
                 child: Container(
                   alignment: Alignment.topRight,
-                  child: Text(
-                    (stationList.isNotEmpty) ? stationList.length.toString() : '',
+                  child: Row(
+                    children: [
+                      Text((stationList.isNotEmpty) ? stationList.length.toString() : ''),
+                      if (stationList.isNotEmpty) ...[
+                        const SizedBox(width: 20),
+                        GestureDetector(
+                          onTap: () {
+                            final stationList = getSamedateStation(
+                              ref: _ref,
+                              stampGetDate: genDate.replaceAll('-', '/'),
+                            )..sort((a, b) => a.stampGetOrder.compareTo(b.stampGetOrder));
+
+                            StationStampDialog(
+                              context: _context,
+                              widget: StationMapAlert(
+                                flag: MapCallPattern.date,
+                                stationList: stationList,
+                              ),
+                            );
+                          },
+                          child: Icon(
+                            Icons.info_outline,
+                            color: Colors.white.withOpacity(0.4),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ),

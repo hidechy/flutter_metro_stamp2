@@ -1,3 +1,5 @@
+// ignore_for_file: cascade_invocations
+
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../model/station_stamp.dart';
@@ -8,11 +10,11 @@ List<StationStamp> getSamedateStation({required WidgetRef ref, String? stampGetD
   final list2 = <StationStamp>[];
   final keepOrder = <int>[];
 
-  ref
-      .watch(stationStampProvider.select((value) => value.stationStampList))
-      .where((element) => element.stampGetDate == stampGetDate)
-      .toList()
-      .forEach((element) {
+  final getData = ref.watch(stationStampProvider.select((value) => value.stationStampList));
+
+  final filteredData = getData.where((element) => element.stampGetDate == stampGetDate).toList();
+
+  filteredData.forEach((element) {
     if (!keepOrder.contains(element.stampGetOrder)) {
       list2.add(element);
     }
