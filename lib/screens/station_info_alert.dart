@@ -37,6 +37,12 @@ class StationInfoAlert extends ConsumerWidget {
                 const SizedBox(height: 20),
                 Container(width: context.screenSize.width),
                 if (stamp != null) ...[
+                  FadeInImage.assetNetwork(
+                    placeholder: 'assets/images/no_image.png',
+                    image: image,
+                    imageErrorBuilder: (c, o, s) => Image.asset('assets/images/no_image.png'),
+                  ),
+                  const SizedBox(height: 30),
                   DefaultTextStyle(
                     style: TextStyle(
                       color: _utility.getTrainColor(trainName: stamp!.trainName),
@@ -48,20 +54,6 @@ class StationInfoAlert extends ConsumerWidget {
                         Text(stamp!.imageCode),
                       ],
                     ),
-                  ),
-                  Text(stamp!.stationName),
-                  Divider(
-                    color: Colors.white.withOpacity(0.4),
-                    thickness: 2,
-                  ),
-                  FadeInImage.assetNetwork(
-                    placeholder: 'assets/images/no_image.png',
-                    image: image,
-                    imageErrorBuilder: (c, o, s) => Image.asset('assets/images/no_image.png'),
-                  ),
-                  Divider(
-                    color: Colors.white.withOpacity(0.4),
-                    thickness: 2,
                   ),
                   Text(stamp!.posterPosition),
                   Row(

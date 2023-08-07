@@ -6,7 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../state/select_train/select_train_notifier.dart';
 import '../state/station_stamp/station_stamp_notifier.dart';
-import 'station_map_alert.dart';
+import 'station_info_alert.dart';
 
 class TabInfo {
   TabInfo(this.label, this.widget);
@@ -15,8 +15,8 @@ class TabInfo {
   Widget widget;
 }
 
-class StationMapTabAlert extends HookConsumerWidget {
-  StationMapTabAlert({super.key, required this.index});
+class StationInfoTabAlert extends HookConsumerWidget {
+  StationInfoTabAlert({super.key, required this.index});
 
   final int index;
 
@@ -28,10 +28,6 @@ class StationMapTabAlert extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _ref = ref;
-
-    final selectTrain = _ref.watch(selectTrainProvider);
-
-    final trainMap = _ref.watch(stationStampProvider.select((value) => value.trainMap));
 
     makeTab();
 
@@ -45,15 +41,8 @@ class StationMapTabAlert extends HookConsumerWidget {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(80),
+          preferredSize: const Size.fromHeight(50),
           child: AppBar(
-            title: Text(
-              trainMap[selectTrain]!,
-              style: const TextStyle(fontSize: 12),
-            ),
-
-            centerTitle: true,
-
             backgroundColor: Colors.transparent,
             //-------------------------//これを消すと「←」が出てくる（消さない）
             leading: const Icon(
@@ -102,9 +91,8 @@ class StationMapTabAlert extends HookConsumerWidget {
       tabs.add(
         TabInfo(
           element.stationName,
-          StationMapAlert(
-            flag: MapCallPattern.spot,
-            stationList: [element],
+          StationInfoAlert(
+            stamp: element,
           ),
         ),
       );

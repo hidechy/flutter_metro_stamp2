@@ -3,15 +3,15 @@
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:station_stamp2/screens/station_map_tab_alert.dart';
 
 import '../extensions/extensions.dart';
 import '../model/station_stamp.dart';
 import '../state/select_train/select_train_notifier.dart';
 import '../state/station_stamp/station_stamp_notifier.dart';
 import '../utility/utility.dart';
-import 'station_info_alert.dart';
+import 'station_info_tab_alert.dart';
 import 'station_map_alert.dart';
+import 'station_map_tab_alert.dart';
 import 'station_stamp_dialog.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -202,9 +202,16 @@ class HomeScreen extends ConsumerWidget {
                                       ),
                                       GestureDetector(
                                         onTap: () {
+                                          var idx = 0;
+
+                                          if (stationStampMap[selectTrain]?[index] != null) {
+                                            final imageCode = stationStampMap[selectTrain]?[index].imageCode;
+                                            idx = imageCode!.toInt() - 1;
+                                          }
+
                                           StationStampDialog(
                                             context: _context,
-                                            widget: StationMapTabAlert(),
+                                            widget: StationMapTabAlert(index: idx),
                                           );
                                         },
                                         child: Icon(
@@ -264,9 +271,16 @@ class HomeScreen extends ConsumerWidget {
                               const SizedBox(width: 10),
                               GestureDetector(
                                 onTap: () {
+                                  var idx = 0;
+
+                                  if (stationStampMap[selectTrain]?[index] != null) {
+                                    final imageCode = stationStampMap[selectTrain]?[index].imageCode;
+                                    idx = imageCode!.toInt() - 1;
+                                  }
+
                                   StationStampDialog(
                                     context: _context,
-                                    widget: StationInfoAlert(stamp: stationStampMap[selectTrain]?[index]),
+                                    widget: StationInfoTabAlert(index: idx),
                                   );
                                 },
                                 child: SizedBox(
