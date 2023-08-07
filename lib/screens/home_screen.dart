@@ -246,7 +246,7 @@ class HomeScreen extends ConsumerWidget {
                                           onTap: () {
                                             final stationList = _getSamedateStation(
                                               stampGetDate: stationStampMap[selectTrain]?[index].stampGetDate,
-                                            );
+                                            )..sort((a, b) => a.stampGetOrder.compareTo(b.stampGetOrder));
 
                                             StationStampDialog(
                                               context: _context,
@@ -309,10 +309,22 @@ class HomeScreen extends ConsumerWidget {
 
   ///
   List<StationStamp> _getSamedateStation({String? stampGetDate}) {
-    return _ref
+    final list = _ref
         .watch(stationStampProvider.select((value) => value.stationStampList))
         .where((element) => element.stampGetDate == stampGetDate)
         .toList();
+
+    final list2 = <StationStamp>[];
+    final keepOrder = <int>[];
+    list.forEach((element) {
+      if (!keepOrder.contains(element.stampGetOrder)) {
+        list2.add(element);
+      }
+
+      keepOrder.add(element.stampGetOrder);
+    });
+
+    return list2;
   }
 
   ///

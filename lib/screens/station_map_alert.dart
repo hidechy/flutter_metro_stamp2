@@ -82,12 +82,7 @@ class StationMapAlert extends ConsumerWidget {
             ),
             //---------------------------------------------
 
-            const SizedBox(height: 10),
-
-            SizedBox(
-              height: 200,
-              child: _displayMapAlertFooter(),
-            ),
+            _displayMapAlertFooter(),
           ],
         ),
       ),
@@ -177,8 +172,16 @@ class StationMapAlert extends ConsumerWidget {
             const SizedBox(height: 5),
           ],
         );
+
       case MapCallPattern.date:
-        return Container();
+        return Column(
+          children: [
+            const SizedBox(height: 10),
+            Text(stationList[0].stampGetDate),
+            const SizedBox(height: 15),
+          ],
+        );
+
       case MapCallPattern.spot:
         return Container();
     }
@@ -188,41 +191,89 @@ class StationMapAlert extends ConsumerWidget {
   Widget _displayMapAlertFooter() {
     switch (flag) {
       case MapCallPattern.train:
-        return DefaultTextStyle(
-          style: const TextStyle(fontSize: 10),
-          child: ListView.builder(
-            itemBuilder: (context, index) {
-              return Container(
-                padding: const EdgeInsets.all(10),
-                margin: const EdgeInsets.only(bottom: 10),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Colors.white.withOpacity(0.3),
-                    ),
-                  ),
+        return Column(
+          children: [
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 200,
+              child: DefaultTextStyle(
+                style: const TextStyle(fontSize: 10),
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    return Container(
+                      padding: const EdgeInsets.all(10),
+                      margin: const EdgeInsets.only(bottom: 10),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Colors.white.withOpacity(0.3),
+                          ),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Text(stationList[index].imageCode),
+                              const SizedBox(width: 20),
+                              Text(stationList[index].stationName),
+                            ],
+                          ),
+                          Text(stationList[index].stampGetDate),
+                        ],
+                      ),
+                    );
+                  },
+                  itemCount: stationList.length,
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Text(stationList[index].imageCode),
-                        const SizedBox(width: 20),
-                        Text(stationList[index].stationName),
-                      ],
-                    ),
-                    Text(stationList[index].stampGetDate),
-                  ],
-                ),
-              );
-            },
-            itemCount: stationList.length,
-          ),
+              ),
+            ),
+          ],
         );
 
       case MapCallPattern.date:
-        return Container();
+        return Column(
+          children: [
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 200,
+              child: DefaultTextStyle(
+                style: const TextStyle(fontSize: 10),
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    return Container(
+                      padding: const EdgeInsets.all(10),
+                      margin: const EdgeInsets.only(bottom: 10),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Colors.white.withOpacity(0.3),
+                          ),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Text(stationList[index].stampGetOrder.toString()),
+                              const SizedBox(width: 20),
+                              Text(stationList[index].stationName),
+                            ],
+                          ),
+                          Text(stationList[index].stampGetDate),
+                        ],
+                      ),
+                    );
+                  },
+                  itemCount: stationList.length,
+                ),
+              ),
+            ),
+          ],
+        );
+
       case MapCallPattern.spot:
         return Container();
     }
