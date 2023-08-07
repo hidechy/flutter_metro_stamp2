@@ -5,10 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../extensions/extensions.dart';
-import '../model/station_stamp.dart';
 import '../state/select_train/select_train_notifier.dart';
 import '../state/station_stamp/station_stamp_notifier.dart';
+import '../utility/functions.dart';
 import '../utility/utility.dart';
+import 'station_date_list_alert.dart';
 import 'station_info_tab_alert.dart';
 import 'station_map_alert.dart';
 import 'station_map_tab_alert.dart';
@@ -31,6 +32,17 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Station Stamp'),
+        actions: [
+          GestureDetector(
+            onTap: () {
+              StationStampDialog(
+                context: context,
+                widget: StationDateListAlert(),
+              );
+            },
+            child: const Icon(Icons.list),
+          ),
+        ],
         flexibleSpace: Stack(
           children: [
             Container(
@@ -272,7 +284,8 @@ class HomeScreen extends ConsumerWidget {
                                         Text('取得日：${stationStampMap[selectTrain]?[index].stampGetDate}'),
                                         GestureDetector(
                                           onTap: () {
-                                            final stationList = _getSamedateStation(
+                                            final stationList = getSamedateStation(
+                                              ref: _ref,
                                               stampGetDate: stationStampMap[selectTrain]?[index].stampGetDate,
                                             )..sort((a, b) => a.stampGetOrder.compareTo(b.stampGetOrder));
 
@@ -340,25 +353,5 @@ class HomeScreen extends ConsumerWidget {
         const SizedBox(height: 20),
       ],
     );
-  }
-
-  ///
-  List<StationStamp> _getSamedateStation({String? stampGetDate}) {
-    final list2 = <StationStamp>[];
-    final keepOrder = <int>[];
-
-    _ref
-        .watch(stationStampProvider.select((value) => value.stationStampList))
-        .where((element) => element.stampGetDate == stampGetDate)
-        .toList()
-        .forEach((element) {
-      if (!keepOrder.contains(element.stampGetOrder)) {
-        list2.add(element);
-      }
-
-      keepOrder.add(element.stampGetOrder);
-    });
-
-    return list2;
   }
 }
