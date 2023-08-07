@@ -152,6 +152,33 @@ class HomeScreen extends ConsumerWidget {
         Expanded(
           child: ListView.separated(
             itemBuilder: (context, index) {
+              //==========================================//
+              if (stationStampMap[selectTrain] != null && stationStampMap[selectTrain]!.length == index) {
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 30),
+                      Row(
+                        children: [
+                          const SizedBox(width: 20),
+                          SizedBox(
+                            height: 250,
+                            child: Image.asset('assets/images/certificate-$selectTrain.jpeg'),
+                          ),
+                          const SizedBox(width: 20),
+                          SizedBox(
+                            height: 250,
+                            child: Image.asset('assets/images/wallpaper-$selectTrain.jpeg'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              }
+              //==========================================//
+
               final latlng =
                   '${stationStampMap[selectTrain]?[index].lat} / ${stationStampMap[selectTrain]?[index].lng}';
 
@@ -307,7 +334,7 @@ class HomeScreen extends ConsumerWidget {
               );
             },
             separatorBuilder: (context, index) => Container(),
-            itemCount: stationStampMap[selectTrain]?.length ?? 0,
+            itemCount: (stationStampMap[selectTrain] != null) ? stationStampMap[selectTrain]!.length + 1 : 0,
           ),
         ),
         const SizedBox(height: 20),
