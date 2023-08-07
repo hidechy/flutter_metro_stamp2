@@ -9,6 +9,7 @@ import 'package:latlong2/latlong.dart';
 
 import '../extensions/extensions.dart';
 import '../model/station_stamp.dart';
+import '../state/select_train/select_train_notifier.dart';
 import '../state/station_stamp/station_stamp_notifier.dart';
 import '../utility/utility.dart';
 
@@ -183,7 +184,7 @@ class StationMapAlert extends ConsumerWidget {
         );
 
       case MapCallPattern.spot:
-        return Container();
+        return const SizedBox(height: 10);
     }
   }
 
@@ -275,7 +276,50 @@ class StationMapAlert extends ConsumerWidget {
         );
 
       case MapCallPattern.spot:
-        return Container();
+        final selectTrain = _ref.watch(selectTrainProvider);
+
+        final stationStampMap = _ref.watch(stationStampProvider.select((value) => value.stationStampMap));
+
+        return Column(
+          children: [
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 200,
+              child: DefaultTextStyle(
+                style: const TextStyle(fontSize: 10),
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    return Container(
+                      padding: const EdgeInsets.all(10),
+                      margin: const EdgeInsets.only(bottom: 10),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Colors.white.withOpacity(0.3),
+                          ),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Text(stationStampMap[selectTrain]![index].imageCode),
+                              const SizedBox(width: 20),
+                              Text(stationStampMap[selectTrain]![index].stationName),
+                            ],
+                          ),
+                          Text(stationStampMap[selectTrain]![index].stampGetDate),
+                        ],
+                      ),
+                    );
+                  },
+                  itemCount: stationStampMap[selectTrain]!.length,
+                ),
+              ),
+            ),
+          ],
+        );
     }
   }
 }

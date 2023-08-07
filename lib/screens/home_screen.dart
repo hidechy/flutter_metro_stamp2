@@ -3,9 +3,11 @@
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:station_stamp2/screens/station_map_tab_alert.dart';
 
 import '../extensions/extensions.dart';
 import '../model/station_stamp.dart';
+import '../state/select_train/select_train_notifier.dart';
 import '../state/station_stamp/station_stamp_notifier.dart';
 import '../utility/utility.dart';
 import 'station_info_alert.dart';
@@ -200,17 +202,9 @@ class HomeScreen extends ConsumerWidget {
                                       ),
                                       GestureDetector(
                                         onTap: () {
-                                          final station = _getStation(
-                                            imageFolder: stationStampMap[selectTrain]?[index].imageFolder,
-                                            imageCode: stationStampMap[selectTrain]?[index].imageCode,
-                                          );
-
                                           StationStampDialog(
                                             context: _context,
-                                            widget: StationMapAlert(
-                                              flag: MapCallPattern.spot,
-                                              stationList: [station],
-                                            ),
+                                            widget: StationMapTabAlert(),
                                           );
                                         },
                                         child: Icon(
@@ -309,14 +303,14 @@ class HomeScreen extends ConsumerWidget {
 
   ///
   List<StationStamp> _getSamedateStation({String? stampGetDate}) {
-    final list = _ref
-        .watch(stationStampProvider.select((value) => value.stationStampList))
-        .where((element) => element.stampGetDate == stampGetDate)
-        .toList();
-
     final list2 = <StationStamp>[];
     final keepOrder = <int>[];
-    list.forEach((element) {
+
+    _ref
+        .watch(stationStampProvider.select((value) => value.stationStampList))
+        .where((element) => element.stampGetDate == stampGetDate)
+        .toList()
+        .forEach((element) {
       if (!keepOrder.contains(element.stampGetOrder)) {
         list2.add(element);
       }
@@ -325,26 +319,5 @@ class HomeScreen extends ConsumerWidget {
     });
 
     return list2;
-  }
-
-  ///
-  StationStamp _getStation({String? imageFolder, String? imageCode}) {
-    final stationStampList = _ref.watch(stationStampProvider.select((value) => value.stationStampList));
-    final train = stationStampList.where((element) => element.imageFolder == imageFolder).toList();
-    return train.firstWhere((e) => e.imageCode == imageCode);
-  }
-}
-
-////////////////////////////////////////////////////////////
-final selectTrainProvider = StateNotifierProvider.autoDispose<SelectTrainStateNotifier, String>((ref) {
-  return SelectTrainStateNotifier();
-});
-
-class SelectTrainStateNotifier extends StateNotifier<String> {
-  SelectTrainStateNotifier() : super('');
-
-  ///
-  Future<void> setTrain({required String train}) async {
-    state = train;
   }
 }
