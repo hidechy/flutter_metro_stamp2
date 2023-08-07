@@ -35,7 +35,9 @@ class StationMapAlert extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _ref = ref;
 
-    makeBounds();
+    if (flag != 'spot') {
+      makeBounds();
+    }
 
     makeMarker();
 
@@ -47,18 +49,25 @@ class StationMapAlert extends ConsumerWidget {
             //---------------------------------------------
             Expanded(
               child: FlutterMap(
-                options: MapOptions(
-                  bounds: LatLngBounds(
-                    LatLng(
-                      boundsLatLngMap['minLat']! - boundsInner,
-                      boundsLatLngMap['minLng']! - boundsInner,
-                    ),
-                    LatLng(
-                      boundsLatLngMap['maxLat']! + boundsInner,
-                      boundsLatLngMap['maxLng']! + boundsInner,
-                    ),
-                  ),
-                ),
+                options: (flag == 'spot')
+                    ? MapOptions(
+                        center: LatLng(stationList[0].lat.toDouble(), stationList[0].lng.toDouble()),
+                        zoom: 16,
+                        maxZoom: 17,
+                        minZoom: 3,
+                      )
+                    : MapOptions(
+                        bounds: LatLngBounds(
+                          LatLng(
+                            boundsLatLngMap['minLat']! - boundsInner,
+                            boundsLatLngMap['minLng']! - boundsInner,
+                          ),
+                          LatLng(
+                            boundsLatLngMap['maxLat']! + boundsInner,
+                            boundsLatLngMap['maxLng']! + boundsInner,
+                          ),
+                        ),
+                      ),
                 children: [
                   TileLayer(
                     urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -108,7 +117,15 @@ class StationMapAlert extends ConsumerWidget {
 
     final trainMap = _ref.watch(stationStampProvider.select((value) => value.trainMap));
 
+    final keepGetOrder = <int>[];
+
     for (var i = 0; i < stationList.length; i++) {
+      if (flag == 'date') {
+        if (keepGetOrder.contains(stationList[i].stampGetOrder)) {
+          continue;
+        }
+      }
+
       markerList.add(
         Marker(
           point: LatLng(
@@ -116,20 +133,26 @@ class StationMapAlert extends ConsumerWidget {
             stationList[i].lng.toDouble(),
           ),
           builder: (context) {
-            return CircleAvatar(
-              backgroundColor: _utility.getTrainColor(trainName: trainMap[stationList[i].imageFolder]!),
-              child: Text(
-                (i + 1).toString(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            );
+            return (flag == 'date')
+                ? CircleAvatar(
+                    backgroundColor: Colors.black.withOpacity(0.4),
+                    child: Text(
+                      stationList[i].stampGetOrder.toString(),
+                      style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+                    ),
+                  )
+                : CircleAvatar(
+                    backgroundColor: _utility.getTrainColor(trainName: trainMap[stationList[i].imageFolder]!),
+                    child: Text(
+                      (i + 1).toString(),
+                      style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+                    ),
+                  );
           },
         ),
       );
+
+      keepGetOrder.add(stationList[i].stampGetOrder);
     }
   }
 }

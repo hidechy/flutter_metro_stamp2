@@ -17,6 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$StationStampResponseState {
   Map<String, String> get trainMap => throw _privateConstructorUsedError;
+  List<StationStamp> get stationStampList => throw _privateConstructorUsedError;
   Map<String, List<StationStamp>> get stationStampMap =>
       throw _privateConstructorUsedError;
   Map<String, List<StationStamp>> get dateStationStampMap =>
@@ -35,6 +36,7 @@ abstract class $StationStampResponseStateCopyWith<$Res> {
   @useResult
   $Res call(
       {Map<String, String> trainMap,
+      List<StationStamp> stationStampList,
       Map<String, List<StationStamp>> stationStampMap,
       Map<String, List<StationStamp>> dateStationStampMap});
 }
@@ -54,6 +56,7 @@ class _$StationStampResponseStateCopyWithImpl<$Res,
   @override
   $Res call({
     Object? trainMap = null,
+    Object? stationStampList = null,
     Object? stationStampMap = null,
     Object? dateStationStampMap = null,
   }) {
@@ -62,6 +65,10 @@ class _$StationStampResponseStateCopyWithImpl<$Res,
           ? _value.trainMap
           : trainMap // ignore: cast_nullable_to_non_nullable
               as Map<String, String>,
+      stationStampList: null == stationStampList
+          ? _value.stationStampList
+          : stationStampList // ignore: cast_nullable_to_non_nullable
+              as List<StationStamp>,
       stationStampMap: null == stationStampMap
           ? _value.stationStampMap
           : stationStampMap // ignore: cast_nullable_to_non_nullable
@@ -85,6 +92,7 @@ abstract class _$$_StationStampResponseStateCopyWith<$Res>
   @useResult
   $Res call(
       {Map<String, String> trainMap,
+      List<StationStamp> stationStampList,
       Map<String, List<StationStamp>> stationStampMap,
       Map<String, List<StationStamp>> dateStationStampMap});
 }
@@ -103,6 +111,7 @@ class __$$_StationStampResponseStateCopyWithImpl<$Res>
   @override
   $Res call({
     Object? trainMap = null,
+    Object? stationStampList = null,
     Object? stationStampMap = null,
     Object? dateStationStampMap = null,
   }) {
@@ -111,6 +120,10 @@ class __$$_StationStampResponseStateCopyWithImpl<$Res>
           ? _value._trainMap
           : trainMap // ignore: cast_nullable_to_non_nullable
               as Map<String, String>,
+      stationStampList: null == stationStampList
+          ? _value._stationStampList
+          : stationStampList // ignore: cast_nullable_to_non_nullable
+              as List<StationStamp>,
       stationStampMap: null == stationStampMap
           ? _value._stationStampMap
           : stationStampMap // ignore: cast_nullable_to_non_nullable
@@ -128,9 +141,11 @@ class __$$_StationStampResponseStateCopyWithImpl<$Res>
 class _$_StationStampResponseState implements _StationStampResponseState {
   const _$_StationStampResponseState(
       {final Map<String, String> trainMap = const {},
+      final List<StationStamp> stationStampList = const [],
       final Map<String, List<StationStamp>> stationStampMap = const {},
       final Map<String, List<StationStamp>> dateStationStampMap = const {}})
       : _trainMap = trainMap,
+        _stationStampList = stationStampList,
         _stationStampMap = stationStampMap,
         _dateStationStampMap = dateStationStampMap;
 
@@ -141,6 +156,16 @@ class _$_StationStampResponseState implements _StationStampResponseState {
     if (_trainMap is EqualUnmodifiableMapView) return _trainMap;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(_trainMap);
+  }
+
+  final List<StationStamp> _stationStampList;
+  @override
+  @JsonKey()
+  List<StationStamp> get stationStampList {
+    if (_stationStampList is EqualUnmodifiableListView)
+      return _stationStampList;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_stationStampList);
   }
 
   final Map<String, List<StationStamp>> _stationStampMap;
@@ -164,7 +189,7 @@ class _$_StationStampResponseState implements _StationStampResponseState {
 
   @override
   String toString() {
-    return 'StationStampResponseState(trainMap: $trainMap, stationStampMap: $stationStampMap, dateStationStampMap: $dateStationStampMap)';
+    return 'StationStampResponseState(trainMap: $trainMap, stationStampList: $stationStampList, stationStampMap: $stationStampMap, dateStationStampMap: $dateStationStampMap)';
   }
 
   @override
@@ -173,6 +198,8 @@ class _$_StationStampResponseState implements _StationStampResponseState {
         (other.runtimeType == runtimeType &&
             other is _$_StationStampResponseState &&
             const DeepCollectionEquality().equals(other._trainMap, _trainMap) &&
+            const DeepCollectionEquality()
+                .equals(other._stationStampList, _stationStampList) &&
             const DeepCollectionEquality()
                 .equals(other._stationStampMap, _stationStampMap) &&
             const DeepCollectionEquality()
@@ -183,6 +210,7 @@ class _$_StationStampResponseState implements _StationStampResponseState {
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(_trainMap),
+      const DeepCollectionEquality().hash(_stationStampList),
       const DeepCollectionEquality().hash(_stationStampMap),
       const DeepCollectionEquality().hash(_dateStationStampMap));
 
@@ -197,12 +225,15 @@ class _$_StationStampResponseState implements _StationStampResponseState {
 abstract class _StationStampResponseState implements StationStampResponseState {
   const factory _StationStampResponseState(
           {final Map<String, String> trainMap,
+          final List<StationStamp> stationStampList,
           final Map<String, List<StationStamp>> stationStampMap,
           final Map<String, List<StationStamp>> dateStationStampMap}) =
       _$_StationStampResponseState;
 
   @override
   Map<String, String> get trainMap;
+  @override
+  List<StationStamp> get stationStampList;
   @override
   Map<String, List<StationStamp>> get stationStampMap;
   @override

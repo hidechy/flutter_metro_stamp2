@@ -44,8 +44,8 @@ flutter:
     - assets/images/
 
 flutter_native_splash:
-  image: "assets/images/train.jpeg"
-  color: "ffffff"
+  image: "assets/images/splash.png"
+  color: "16308a"
 
 flutter_icons:
   android: "launcher_icon"

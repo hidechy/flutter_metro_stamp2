@@ -29,6 +29,7 @@ class StationStampNotifier extends StateNotifier<StationStampResponseState> {
       final trainMap = <String, String>{};
       final stationStampMap = <String, List<StationStamp>>{};
       final dateStationStampMap = <String, List<StationStamp>>{};
+      final stationStampList = <StationStamp>[];
 
       final keepTrain = <String>[];
       for (var i = 0; i < value['data'].length.toString().toInt(); i++) {
@@ -47,6 +48,8 @@ class StationStampNotifier extends StateNotifier<StationStampResponseState> {
       for (var i = 0; i < value['data'].length.toString().toInt(); i++) {
         final val = StationStamp.fromJson(value['data'][i] as Map<String, dynamic>);
 
+        stationStampList.add(val);
+
         stationStampMap[val.imageFolder]?.add(val);
 
         dateStationStampMap[val.stampGetDate.replaceAll('/', '-')]?.add(val);
@@ -56,12 +59,11 @@ class StationStampNotifier extends StateNotifier<StationStampResponseState> {
         trainMap: trainMap,
         stationStampMap: stationStampMap,
         dateStationStampMap: dateStationStampMap,
+        stationStampList: stationStampList,
       );
+    }).catchError((error, _) {
+      utility.showError('予期せぬエラーが発生しました');
     });
-
-    // .catchError((error, _) {
-    //   utility.showError('予期せぬエラーが発生しました');
-    // });
   }
 }
 

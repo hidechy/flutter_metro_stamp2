@@ -3,13 +3,14 @@
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:station_stamp2/screens/station_info_alert.dart';
-import 'package:station_stamp2/screens/station_map_alert.dart';
-import 'package:station_stamp2/screens/station_stamp_dialog.dart';
 
 import '../extensions/extensions.dart';
+import '../model/station_stamp.dart';
 import '../state/station_stamp/station_stamp_notifier.dart';
 import '../utility/utility.dart';
+import 'station_info_alert.dart';
+import 'station_map_alert.dart';
+import 'station_stamp_dialog.dart';
 
 class HomeScreen extends ConsumerWidget {
   HomeScreen({super.key});
@@ -26,6 +27,24 @@ class HomeScreen extends ConsumerWidget {
     _ref = ref;
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Station Stamp'),
+        flexibleSpace: Stack(
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/bg_train.png'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(color: Colors.black.withOpacity(0.6)),
+            ),
+          ],
+        ),
+      ),
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -134,9 +153,6 @@ class HomeScreen extends ConsumerWidget {
               final latlng =
                   '${stationStampMap[selectTrain]?[index].lat} / ${stationStampMap[selectTrain]?[index].lng}';
 
-              final image =
-                  'http://toyohide.work/BrainLog/station_stamp/${stationStampMap[selectTrain]?[index].imageFolder}/${stationStampMap[selectTrain]?[index].imageCode}.png';
-
               return DefaultTextStyle(
                 style: const TextStyle(fontSize: 8),
                 child: Row(
@@ -182,10 +198,26 @@ class HomeScreen extends ConsumerWidget {
                                         stationStampMap[selectTrain]?[index].stationName ?? '',
                                         style: const TextStyle(fontSize: 10),
                                       ),
-                                      Icon(
-                                        Icons.location_on,
-                                        size: 14,
-                                        color: Colors.white.withOpacity(0.6),
+                                      GestureDetector(
+                                        onTap: () {
+                                          final stationList = _getStation(
+                                            imageFolder: stationStampMap[selectTrain]?[index].imageFolder,
+                                            imageCode: stationStampMap[selectTrain]?[index].imageCode,
+                                          );
+
+                                          StationStampDialog(
+                                            context: _context,
+                                            widget: StationMapAlert(
+                                              flag: 'spot',
+                                              stationList: [stationList],
+                                            ),
+                                          );
+                                        },
+                                        child: Icon(
+                                          Icons.location_on,
+                                          size: 14,
+                                          color: Colors.white.withOpacity(0.6),
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -210,10 +242,25 @@ class HomeScreen extends ConsumerWidget {
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text('取得日：${stationStampMap[selectTrain]?[index].stampGetDate}'),
-                                        Icon(
-                                          Icons.calendar_today,
-                                          size: 14,
-                                          color: Colors.white.withOpacity(0.4),
+                                        GestureDetector(
+                                          onTap: () {
+                                            final stationList = _getSamedateStation(
+                                              stampGetDate: stationStampMap[selectTrain]?[index].stampGetDate,
+                                            );
+
+                                            StationStampDialog(
+                                              context: _context,
+                                              widget: StationMapAlert(
+                                                flag: 'date',
+                                                stationList: stationList,
+                                              ),
+                                            );
+                                          },
+                                          child: Icon(
+                                            Icons.calendar_month_outlined,
+                                            size: 14,
+                                            color: Colors.white.withOpacity(0.4),
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -234,7 +281,8 @@ class HomeScreen extends ConsumerWidget {
                                     opacity: 0.6,
                                     child: FadeInImage.assetNetwork(
                                       placeholder: 'assets/images/no_image.png',
-                                      image: image,
+                                      image:
+                                          'http://toyohide.work/BrainLog/station_stamp/${stationStampMap[selectTrain]?[index].imageFolder}/${stationStampMap[selectTrain]?[index].imageCode}.png',
                                       imageErrorBuilder: (c, o, s) => Image.asset('assets/images/no_image.png'),
                                     ),
                                   ),
@@ -257,6 +305,30 @@ class HomeScreen extends ConsumerWidget {
         const SizedBox(height: 20),
       ],
     );
+  }
+
+  ///
+  List<StationStamp> _getSamedateStation({String? stampGetDate}) {
+    final list = <StationStamp>[];
+
+    _ref.watch(stationStampProvider.select((value) => value.stationStampList)).forEach((element) {
+      if (element.stampGetDate == stampGetDate!) {
+        list.add(element);
+      }
+    });
+
+    return list;
+  }
+
+  ///
+  StationStamp _getStation({String? imageFolder, String? imageCode}) {
+    final stationStampList = _ref.watch(stationStampProvider.select((value) => value.stationStampList));
+
+    final train = stationStampList.where((element) => element.imageFolder == imageFolder).toList();
+
+    final stationStamp = train.firstWhere((e) => e.imageCode == imageCode);
+
+    return stationStamp;
   }
 }
 
