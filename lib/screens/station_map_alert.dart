@@ -31,6 +31,8 @@ class StationMapAlert extends ConsumerWidget {
 
   List<Marker> markerList = [];
 
+  List<LatLng> polyLineList = [];
+
   late WidgetRef _ref;
 
   ///
@@ -39,12 +41,17 @@ class StationMapAlert extends ConsumerWidget {
     _ref = ref;
 
     if (flag != MapCallPattern.spot) {
-      makeBounds();
+      _makeBounds();
     }
 
-    makeMarker();
+    _makeMarker();
+
+    if (flag == MapCallPattern.date) {
+      _makePolyline();
+    }
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,6 +85,15 @@ class StationMapAlert extends ConsumerWidget {
                     urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   ),
                   MarkerLayer(markers: markerList),
+                  PolylineLayer(
+                    polylines: [
+                      Polyline(
+                        points: polyLineList,
+                        color: Colors.redAccent.withOpacity(0.6),
+                        strokeWidth: 5,
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -91,7 +107,7 @@ class StationMapAlert extends ConsumerWidget {
   }
 
   ///
-  void makeBounds() {
+  void _makeBounds() {
     final latList = <double>[];
     final lngList = <double>[];
 
@@ -119,7 +135,7 @@ class StationMapAlert extends ConsumerWidget {
   }
 
   ///
-  void makeMarker() {
+  void _makeMarker() {
     markerList = [];
 
     final trainMap = _ref.watch(stationStampProvider.select((value) => value.trainMap));
@@ -142,7 +158,10 @@ class StationMapAlert extends ConsumerWidget {
           builder: (context) {
             return (flag == MapCallPattern.date)
                 ? CircleAvatar(
-                    backgroundColor: Colors.black.withOpacity(0.4),
+                    backgroundColor: _getDatePatternBgColor(
+                      stationName: stationList[i].stationName,
+                      posterPosition: stationList[i].posterPosition,
+                    ),
                     child: Text(
                       stationList[i].stampGetOrder.toString(),
                       style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
@@ -164,6 +183,13 @@ class StationMapAlert extends ConsumerWidget {
   }
 
   ///
+  void _makePolyline() {
+    stationList.forEach((element) {
+      polyLineList.add(LatLng(element.lat.toDouble(), element.lng.toDouble()));
+    });
+  }
+
+  ///
   Widget _displayMapAlertHeader() {
     switch (flag) {
       case MapCallPattern.train:
@@ -178,7 +204,48 @@ class StationMapAlert extends ConsumerWidget {
         return Column(
           children: [
             const SizedBox(height: 10),
-            Text(stationList[0].stampGetDate),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(stationList[0].stampGetDate),
+                  DefaultTextStyle(
+                    style: const TextStyle(fontSize: 10),
+                    child: Row(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.deepOrange.withOpacity(0.4),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+                          child: const Text('特殊'),
+                        ),
+                        const SizedBox(width: 5),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.indigo.withOpacity(0.4),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+                          child: const Text('改札外'),
+                        ),
+                        const SizedBox(width: 5),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.pinkAccent.withOpacity(0.4),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+                          child: const Text('改札内'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 15),
           ],
         );
@@ -214,14 +281,19 @@ class StationMapAlert extends ConsumerWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Text(stationList[index].imageCode),
-                              const SizedBox(width: 20),
-                              Text(stationList[index].stationName),
-                            ],
+                          Expanded(child: Text(stationList[index].imageCode)),
+                          Expanded(
+                            flex: 3,
+                            child: Text(stationList[index].stationName),
                           ),
-                          Text(stationList[index].stampGetDate),
+                          Expanded(
+                            flex: 2,
+                            child: _displayTrainMark(station: stationList[index].stationName),
+                          ),
+                          SizedBox(
+                            width: 60,
+                            child: Text(stationList[index].stampGetDate),
+                          ),
                         ],
                       ),
                     );
@@ -256,14 +328,21 @@ class StationMapAlert extends ConsumerWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Text(stationList[index].stampGetOrder.toString()),
-                              const SizedBox(width: 20),
-                              Text(stationList[index].stationName),
-                            ],
+                          Expanded(
+                            child: Text(stationList[index].stampGetOrder.toString()),
                           ),
-                          Text(stationList[index].stampGetDate),
+                          Expanded(
+                            flex: 3,
+                            child: Text(stationList[index].stationName),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: _displayTrainMark(station: stationList[index].stationName),
+                          ),
+                          SizedBox(
+                            width: 60,
+                            child: Text(stationList[index].stampGetDate),
+                          ),
                         ],
                       ),
                     );
@@ -302,14 +381,19 @@ class StationMapAlert extends ConsumerWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Text(stationStampMap[selectTrain]![index].imageCode),
-                              const SizedBox(width: 20),
-                              Text(stationStampMap[selectTrain]![index].stationName),
-                            ],
+                          Expanded(child: Text(stationStampMap[selectTrain]![index].imageCode)),
+                          Expanded(
+                            flex: 3,
+                            child: Text(stationStampMap[selectTrain]![index].stationName),
                           ),
-                          Text(stationStampMap[selectTrain]![index].stampGetDate),
+                          Expanded(
+                            flex: 2,
+                            child: _displayTrainMark(station: stationStampMap[selectTrain]![index].stationName),
+                          ),
+                          SizedBox(
+                            width: 60,
+                            child: Text(stationStampMap[selectTrain]![index].stampGetDate),
+                          ),
                         ],
                       ),
                     );
@@ -320,6 +404,62 @@ class StationMapAlert extends ConsumerWidget {
             ),
           ],
         );
+    }
+  }
+
+  ///
+  Widget _displayTrainMark({required String station}) {
+    final trainMap = _ref.watch(stationStampProvider.select((value) => value.trainMap));
+
+    final list = <Widget>[];
+
+    final stationStampList = _ref.watch(stationStampProvider.select((value) => value.stationStampList));
+
+    stationStampList.where((element) => element.stationName == station).toList().forEach((element) {
+      list.add(
+        Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: _utility.getTrainColor(trainName: trainMap[element.imageFolder]!),
+          ),
+          padding: const EdgeInsets.all(2),
+          child: Container(
+            decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.black),
+            padding: const EdgeInsets.all(4),
+            child: Text(
+              element.imageFolder,
+              style: const TextStyle(fontSize: 10),
+            ),
+          ),
+        ),
+      );
+    });
+
+    return Row(children: list);
+  }
+
+  ///
+  Color _getDatePatternBgColor({required String posterPosition, required String stationName}) {
+    final reg = RegExp('改札内');
+    final reg2 = RegExp('改札外');
+
+    final specialStation = <String>[
+      '中目黒',
+      '中野',
+      '西船橋',
+      '代々木上原',
+      '和光市',
+      '目黒',
+    ];
+
+    if (specialStation.contains(stationName)) {
+      return Colors.deepOrange.withOpacity(0.4);
+    } else if (reg.firstMatch(posterPosition) != null) {
+      return Colors.pinkAccent.withOpacity(0.4);
+    } else if (reg2.firstMatch(posterPosition) != null) {
+      return Colors.indigo.withOpacity(0.4);
+    } else {
+      return Colors.black.withOpacity(0.4);
     }
   }
 }

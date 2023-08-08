@@ -1,4 +1,4 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, literal_only_boolean_expressions
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -7,6 +7,7 @@ import '../extensions/extensions.dart';
 import '../model/station_stamp.dart';
 import '../state/holiday/holiday_notifier.dart';
 import '../state/station_stamp/station_stamp_notifier.dart';
+import '../state/temple/temple_notifier.dart';
 import '../utility/functions.dart';
 import '../utility/utility.dart';
 import 'station_map_alert.dart';
@@ -54,6 +55,8 @@ class StationDateListAlert extends ConsumerWidget {
   Widget _displayDateList() {
     final list = <Widget>[];
 
+    final dateTempleMap = _ref.watch(templeAllProvider.select((value) => value.dateTempleMap));
+
     final holidayState = _ref.watch(holidayProvider);
 
     final dateStationStampMap = _ref.watch(stationStampProvider.select((value) => value.dateStationStampMap));
@@ -63,13 +66,13 @@ class StationDateListAlert extends ConsumerWidget {
     final diff = DateTime(2023, 8, 5).difference(firstDate).inDays;
 
     for (var i = 0; i <= diff; i++) {
-      final genDate = firstDate.add(Duration(days: i)).yyyymmdd;
+      final genDate = firstDate.add(Duration(days: i));
 
       final youbi = firstDate.add(Duration(days: i)).youbiStr;
 
       final stationList = <StationStamp>[];
       final keepOrder = <int>[];
-      dateStationStampMap[genDate]?.forEach((element) {
+      dateStationStampMap[genDate.yyyymmdd]?.forEach((element) {
         if (!keepOrder.contains(element.stampGetOrder)) {
           stationList.add(element);
         }
@@ -78,6 +81,15 @@ class StationDateListAlert extends ConsumerWidget {
       });
 
       stationList.sort((a, b) => a.stampGetOrder.compareTo(b.stampGetOrder));
+
+      final templeList = <String>[];
+      if (dateTempleMap[genDate.yyyymmdd] != null && stationList.isNotEmpty) {
+        templeList.add('${dateTempleMap[genDate.yyyymmdd]?.temple}');
+
+        if ('${dateTempleMap[genDate.yyyymmdd]?.memo}' != '') {
+          templeList.add('${dateTempleMap[genDate.yyyymmdd]?.memo}');
+        }
+      }
 
       list.add(
         Container(
@@ -95,54 +107,71 @@ class StationDateListAlert extends ConsumerWidget {
               holiday: holidayState.data,
             ),
           ),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                flex: 2,
-                child: Text('$genDate (${youbi.substring(0, 3)})'),
-              ),
-              Expanded(
-                flex: 2,
-                child: Text(
-                  (stationList.isNotEmpty)
-                      ? (stationList.length > 1)
-                          ? '${stationList[0].stationName} 〜 ${stationList[stationList.length - 1].stationName}'
-                          : stationList[0].stationName
-                      : '',
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  alignment: Alignment.topRight,
-                  child: Row(
-                    children: [
-                      Text((stationList.isNotEmpty) ? stationList.length.toString() : ''),
-                      if (stationList.isNotEmpty) ...[
-                        const SizedBox(width: 20),
-                        GestureDetector(
-                          onTap: () {
-                            final stationList = getSamedateStation(
-                              ref: _ref,
-                              stampGetDate: genDate.replaceAll('-', '/'),
-                            )..sort((a, b) => a.stampGetOrder.compareTo(b.stampGetOrder));
-
-                            StationStampDialog(
-                              context: _context,
-                              widget: StationMapAlert(
-                                flag: MapCallPattern.date,
-                                stationList: stationList,
-                              ),
-                            );
-                          },
-                          child: Icon(
-                            Icons.info_outline,
-                            color: Colors.white.withOpacity(0.4),
-                          ),
-                        ),
-                      ],
-                    ],
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${genDate.yyyymmdd} (${youbi.substring(0, 3)})',
+                    style: TextStyle(color: (stationList.isNotEmpty) ? Colors.white : Colors.grey),
                   ),
-                ),
+                  Container(
+                    child: (stationList.isNotEmpty)
+                        ? Row(
+                            children: [
+                              Text((stationList.isNotEmpty) ? stationList.length.toString() : ''),
+                              const SizedBox(width: 10),
+                              GestureDetector(
+                                onTap: () {
+                                  final stationList = getSamedateStation(
+                                    ref: _ref,
+                                    stampGetDate: genDate.yyyymmdd.replaceAll('-', '/'),
+                                  )..sort((a, b) => a.stampGetOrder.compareTo(b.stampGetOrder));
+
+                                  StationStampDialog(
+                                    context: _context,
+                                    widget: StationMapAlert(
+                                      flag: MapCallPattern.date,
+                                      stationList: stationList,
+                                    ),
+                                  );
+                                },
+                                child: Icon(
+                                  Icons.info_outline,
+                                  color: Colors.white.withOpacity(0.4),
+                                ),
+                              ),
+                            ],
+                          )
+                        : Container(),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          (stationList.isNotEmpty)
+                              ? (stationList.length > 1)
+                                  ? '${stationList[0].stationName} 〜 ${stationList[stationList.length - 1].stationName}'
+                                  : stationList[0].stationName
+                              : '',
+                        ),
+                        if (dateTempleMap[genDate.yyyymmdd] != null && stationList.isNotEmpty)
+                          Text(
+                            templeList.join('、'),
+                            style: const TextStyle(color: Colors.grey),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -150,6 +179,11 @@ class StationDateListAlert extends ConsumerWidget {
       );
     }
 
-    return SingleChildScrollView(child: Column(children: list));
+    return SingleChildScrollView(
+      child: DefaultTextStyle(
+        style: const TextStyle(fontSize: 10),
+        child: Column(children: list),
+      ),
+    );
   }
 }
