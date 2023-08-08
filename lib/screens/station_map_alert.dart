@@ -84,7 +84,6 @@ class StationMapAlert extends ConsumerWidget {
                   TileLayer(
                     urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   ),
-                  MarkerLayer(markers: markerList),
                   PolylineLayer(
                     polylines: [
                       Polyline(
@@ -94,6 +93,7 @@ class StationMapAlert extends ConsumerWidget {
                       ),
                     ],
                   ),
+                  MarkerLayer(markers: markerList),
                 ],
               ),
             ),
@@ -138,8 +138,6 @@ class StationMapAlert extends ConsumerWidget {
   void _makeMarker() {
     markerList = [];
 
-    final trainMap = _ref.watch(stationStampProvider.select((value) => value.trainMap));
-
     final keepGetOrder = <int>[];
 
     for (var i = 0; i < stationList.length; i++) {
@@ -168,7 +166,7 @@ class StationMapAlert extends ConsumerWidget {
                     ),
                   )
                 : CircleAvatar(
-                    backgroundColor: _utility.getTrainColor(trainName: trainMap[stationList[i].imageFolder]!),
+                    backgroundColor: _utility.getTrainColor(trainName: stationList[i].trainName),
                     child: Text(
                       stationList[i].imageCode,
                       style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
@@ -409,8 +407,6 @@ class StationMapAlert extends ConsumerWidget {
 
   ///
   Widget _displayTrainMark({required String station}) {
-    final trainMap = _ref.watch(stationStampProvider.select((value) => value.trainMap));
-
     final list = <Widget>[];
 
     final stationStampList = _ref.watch(stationStampProvider.select((value) => value.stationStampList));
@@ -420,7 +416,7 @@ class StationMapAlert extends ConsumerWidget {
         Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: _utility.getTrainColor(trainName: trainMap[element.imageFolder]!),
+            color: _utility.getTrainColor(trainName: element.trainName),
           ),
           padding: const EdgeInsets.all(2),
           child: Container(
