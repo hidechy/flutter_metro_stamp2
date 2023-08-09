@@ -8,6 +8,7 @@ import '../model/station_stamp.dart';
 import '../state/holiday/holiday_notifier.dart';
 import '../state/station_stamp/station_stamp_notifier.dart';
 import '../state/temple/temple_notifier.dart';
+import '../state/walk_record/walk_record_notifier.dart';
 import '../utility/functions.dart';
 import '../utility/utility.dart';
 import 'station_map_alert.dart';
@@ -61,6 +62,8 @@ class StationDateListAlert extends ConsumerWidget {
 
     final dateStationStampMap = _ref.watch(stationStampProvider.select((value) => value.dateStationStampMap));
 
+    final walkRecordMap = _ref.watch(walkRecordProvider.select((value) => value.walkRecordMap));
+
     final firstDate = DateTime(2022, 12, 3);
 
     final diff = DateTime(2023, 8, 5).difference(firstDate).inDays;
@@ -89,6 +92,11 @@ class StationDateListAlert extends ConsumerWidget {
         if ('${dateTempleMap[genDate.yyyymmdd]?.memo}' != '') {
           templeList.add('${dateTempleMap[genDate.yyyymmdd]?.memo}');
         }
+      }
+
+      var kilo = '';
+      if (walkRecordMap[genDate.yyyymmdd] != null) {
+        kilo = (walkRecordMap[genDate.yyyymmdd]!.distance / 1000).toString().split('.')[0];
       }
 
       list.add(
@@ -166,6 +174,11 @@ class StationDateListAlert extends ConsumerWidget {
                         if (dateTempleMap[genDate.yyyymmdd] != null && stationList.isNotEmpty)
                           Text(
                             templeList.join('、'),
+                            style: const TextStyle(color: Colors.grey),
+                          ),
+                        if (walkRecordMap[genDate.yyyymmdd] != null && stationList.isNotEmpty)
+                          Text(
+                            '${kilo}km / ${walkRecordMap[genDate.yyyymmdd]?.step}steps',
                             style: const TextStyle(color: Colors.grey),
                           ),
                       ],

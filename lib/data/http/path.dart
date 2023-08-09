@@ -2,6 +2,7 @@ enum APIPath {
   getStationStamp,
   getholiday,
   getAllTemple,
+  getWalkRecord2,
 }
 
 extension APIPathExtension on APIPath {
@@ -13,6 +14,8 @@ extension APIPathExtension on APIPath {
         return 'getholiday';
       case APIPath.getAllTemple:
         return 'getAllTemple';
+      case APIPath.getWalkRecord2:
+        return 'getWalkRecord2';
     }
   }
 }
